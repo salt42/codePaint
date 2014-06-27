@@ -1,13 +1,42 @@
+var testCode = '';
+var rootScope = null;
+function onLoad(){
+    /*
+    rootScope = {
+        domEl: $('#canvas'),
+        subScopes: [],
+        addScope: function(data){
+            var sub = new scope(data, this);
+            //position bestimmen
+            var l = this.subScopes.length*200+50;
+            $(sub.domEl).css('left', l+'px');
+            this.subScopes.push(sub);
+            return sub;
+        }
+    }*/
+    $.ajax({
+        type: "GET",
+        url: "sampleCode.js",
+        dataType: 'text',
+        success: function(e){
+            testCode = e;
+            runParser();
+        }
+    });
+}
+
+
 function scope(data, parent) {
     if(parent){
+        console.log(data)
         this.domEl = $('<div></div>')
             .addClass(data.type)
             .append( $('<div></div>')
                 .addClass('title')
-                .append(data.type));
+                .append(data.type + '      | pos: ' + data.loc.start.line + ' / ' + data.loc.start.column));
         $(parent.domEl).append(this.domEl);
     }
-    if(data)this.parseData(data);
+    if(data) this.parseData(data);
 }
 
 scope.prototype.data = null;
@@ -19,6 +48,7 @@ scope.prototype.addScope = function(data){
     this.subScopes.push(sub);
     return sub;
 };
+
 scope.prototype.parseData = function(data){
     this.data = data;
     //parse data for this scorpe
@@ -66,36 +96,6 @@ scope.prototype.parseData = function(data){
 };
 
 
-
-
-var testCode = '';
-var rootScope = null;
-function onLoad(){
-
-
-    /*
-    rootScope = {
-        domEl: $('#canvas'),
-        subScopes: [],
-        addScope: function(data){
-            var sub = new scope(data, this);
-            //position bestimmen
-            var l = this.subScopes.length*200+50;
-            $(sub.domEl).css('left', l+'px');
-            this.subScopes.push(sub);
-            return sub;
-        }
-    }*/
-    $.ajax({
-        type: "GET",
-        url: "sampleCode.js",
-        dataType: 'text',
-        success: function(e){
-            testCode = e;
-            runParser();
-        }
-    });
-}
 
 function runParser(){
     var result = esprima.parse(testCode, {
@@ -194,114 +194,8 @@ function runParser(){
             }while(node.body.length && bmi < node.body.length);
             return;
     }
-
-
-
     return;
 
-
-
-
-
-
-
-
-
-
-    var drawE = $('#canvas')
-    var drawStack = [drawE];
-    draw(result)
-    function draw(node){
-        switch(node.type){
-            case 'FunctionDeclaration':
-                var dom = $('<div></div>')
-                  .addClass('functionDeclaration')
-                  .append(node.id.name);
-
-                console.log(PEG.compiler.compile)
-                $(drawStack[drawStack.length-1]).append(dom);
-                drawStack.push(dom);
-                draw(node.body);
-                drawStack.pop();
-                return;
-                //node.body // next object
-                //node.id.name // node.id.type = Identifier
-                //node.params[].name
-                break;
-            case 'VariableDeclaration':
-                //todo über declarations loppen
-                var dec = node.declarations[0];
-                switch(dec.init.type) {
-                    case 'ObjectExpression':
-                        //neues object
-                        var dom = $('<div></div>')
-                          .addClass('objectExpression')
-                          .append(dec.id.name);
-
-                        dec.init.properties.forEach(function(v,k){
-                            var propDom = $('<div></div>')
-                              .append(v.key.name)
-                            if(v.value.type == 'FunctionExpression'){
-                                propDom.addClass('functionExpression');
-                            }
-                            dom.append(propDom);
-
-                        })
-                        $(drawStack[drawStack.length-1]).append(dom);
-                        drawStack.push(dom);
-                        //draw(node.body);
-                        drawStack.pop();
-                        break;
-                }
-                break;
-            case 'ExpressionStatement':
-                break;
-            case '"BlockStatement"':
-                break;
-            case 'ExpressionStatement':
-                break;
-
-            case 'Program':
-                var len = node.body.length;
-                for(i=0;i<len;i++) {
-                    draw(node.body[i])
-                }
-                break;
-
-        }
-    }
-
-
-    //mouse interaction
-    $('#canvas div').each(function(key,value){
-        value.addEventListener('mousedown', mouseDown, false);
-    })
-    var off = $('#canvas').offset();
-    var mDown = false;
-    var tOff = {x:0,y:0};
-    var mTarget = null;
-    function mouseDown(e){
-        mDown = true;
-        tOff.x = e.offsetX
-        tOff.y = e.offsetY
-        mTarget = this
-        e.preventDefault()
-    }
-    document.onmousemove = function(e){
-        if(mDown){
-            var x = e.x-off.left-tOff.x
-            var y = e.y-off.top-tOff.y
-
-            $(mTarget).css('left', x+'px')
-            $(mTarget).css('top', y+'px')
-            //console.log('move: ',e)
-        }
-
-    }
-    document.onmouseup = function(e){
-        mDown = false;
-        mTarget = null;
-    }
 
 }
 
