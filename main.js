@@ -88,7 +88,7 @@ function onLoad(){
     }*/
     $.ajax({
         type: "GET",
-        url: "test.js",
+        url: "sampleCode.js",
         dataType: 'text',
         success: function(e){
             testCode = e;
