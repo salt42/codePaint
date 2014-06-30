@@ -29,11 +29,12 @@ function onLoad(){
 function scope(data, parent) {
     if(parent){
         console.log(data)
+        var type = typeof data.type == 'undefined' ? 'Identifier' : data.type;
         this.domEl = $('<div></div>')
-            .addClass(data.type)
+            .addClass(type+' framed')
             .append( $('<div></div>')
                 .addClass('title')
-                .append(data.type + '      | pos: ' + data.loc.start.line + ' / ' + data.loc.start.column));
+                .append(type + '      | pos: ' + data.loc.l + ' / ' + data.loc.c));
         $(parent.domEl).append(this.domEl);
     }
     if(data) this.parseData(data);
@@ -49,47 +50,54 @@ scope.prototype.addScope = function(data){
     return sub;
 };
 
-scope.prototype.parseData = function(data){
+scope.prototype.parseData = function(data, parent){
     this.data = data;
+    var parent = parent ? parent : this;
     //parse data for this scorpe
     switch(data.type){
         case 'FunctionDeclaration':
-            var n = new scope(data.body, this);
+            var n = new scope(data.body, parent);
             this.subScopes.push(n);
             break;
         case 'VariableDeclaration':
             //if(data.declarations[0].init.type == 'ObjectExpression'){
-                var n = new scope(data.declarations[0].init, this);
+                var n = new scope(data.declarations[0].init, parent);
                 this.subScopes.push(n);
             //}
             break;
         case 'ObjectExpression':
             for(i=0;i<data.properties.length;i++){
-                var n = new scope(data.properties[i], this);
+                var n = new scope(data.properties[i], parent);
                 this.subScopes.push(n);
             }
             break;
         case 'Property':
-            var n = new scope(data.value, this);
+            var n = new scope(data.value, parent);
             this.subScopes.push(n);
             break;
         case 'FunctionExpression':
-            var n = new scope(data.body, this);
+            var n = new scope(data.body, parent);
             this.subScopes.push(n);
             break;
         case 'BlockStatement2':
             for(i=0;i<data.body.length;i++){
-                var n = new scope(data.body[i], this);
+                var n = new scope(data.body[i], parent);
                 this.subScopes.push(n);
             }
             break;
         case 'Program':
             for(ii=0;ii<data.body.length;ii++){
-                var n = new scope(data.body[ii], this);
+                var n = new scope(data.body[ii], parent);
                 this.subScopes.push(n);
             }
             break;
         default:
+            if(data.kind == 'init'){
+                var n = new scope(data.key, parent);
+                var m = new scope(data.value, n);
+                this.subScopes.push(n);
+                this.subScopes.push(m);
+            }
     }
     //parse childs and
     //set draw type :  class/propertie
@@ -98,22 +106,22 @@ scope.prototype.parseData = function(data){
 
 
 function runParser(){
+    var result = PEG.parse(testCode);
     /*
-    var result = esprima.parse(testCode, {
+    var result = PEG.parse(testCode, {
         loc: true,
         range : false,
         raw : false,
         tokens : false,
         comment : false,
         tolerant : false
-    })
-    */
-    console.log(PEG.parse(testCode) )
+    });
+    console.log(PEG.parse(testCode) )*/
 
     rootScope = new scope();
     rootScope.domEl = $('#canvas');
     rootScope.parseData(result)
-
+    console.log(rootScope);
     $('#canvas div').each(function(key,value){
         value.addEventListener('mousedown', mouseDown, false);
     })
