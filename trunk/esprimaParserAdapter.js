@@ -3,6 +3,6 @@ define(function (require, exports, module) {
         console.clear();
         console.log('nice')
     };
-    
+
     exports.fuck = fuck;
 });
