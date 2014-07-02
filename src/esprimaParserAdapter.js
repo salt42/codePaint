@@ -1,123 +1,69 @@
 define(function (require, exports, module) {
 
-    function runParser(){
-        var result = esprima.parse(testCode, {
-            loc: true,
-            range : false,
-            raw : false,
-            tokens : false,
-            comment : false,
-            tolerant : false
-        })
-        rootScope = new scope();
-        rootScope.domEl = $('#canvas');
-        rootScope.parseData(result);
+    var esprima = require('../lib/esprima'),
+          scope = require('src/scope');
+    var rootScope = new scope();
 
-        $('#canvas div').each(function(key,value){
-            value.addEventListener('mousedown', mouseDown, false);
-        })
-        var off = $('#canvas').offset();
-        var mDown = false;
-        var tOff = {x:0,y:0};
-        var mTarget = null;
-        function mouseDown(e){
-            mDown = true;
-            tOff.x = e.offsetX
-            tOff.y = e.offsetY
-            mTarget = this
-            e.preventDefault()
-        }
-        document.onmousemove = function(e){
-            if(mDown){
-                var x = e.x-off.left-tOff.x
-                var y = e.y-off.top-tOff.y
+    var parse = function(code){
+        // esprima parse code
+        var esprimaRaw = esprima.parse(code, { loc: true });
 
-                $(mTarget).css('left', x+'px')
-                $(mTarget).css('top', y+'px')
-                //console.log('move: ',e)
-            }
-
-        }
-        document.onmouseup = function(e){
-            mDown = false;
-            mTarget = null;
-        }
-
-
-        //parseRecur(result, rootScope)
-        function parseRecur(node, parentScope){
-                if(!node.body)return;
-                var bmi = 0;
-                do{
-                    var childNode;
-                    (!node.body.length)? childNode = node.body : childNode = node.body[bmi];
-                    switch(childNode.type){
-                        case 'VariableDeclaration':
-                            declarations: Array[1]
-                                id: Node
-                                init: Node
-                                loc: SourceLocation
-                                type: "VariableDeclarator"
-
-                            kind: "var"
-                            loc: SourceLocation
-                            type: "VariableDeclaration"
-
-                            var subParent = parentScope.addScope(childNode);
-
-                            var dec = childNode.declarations[0].init;
-                            console.log(dec.type)
-                            if(dec.type == 'ObjectExpression' || dec.type == 'FunctionExpression'){
-                                var subScope = subParent.addScope(dec);
-                                parseRecur(dec, subScope);
-                            }
-                            break;
-                        case 'ObjectExpression':
-                            //loc: SourceLocation
-                            //properties: Array[2]
-                            //type: "ObjectExpression"
-                            break;
-                        default:
-                            var subScope = parentScope.addScope(childNode);
-                            parseRecur(childNode, subScope);
-                            break;
-                    }
-                    bmi++;
-                }while(node.body.length && bmi < node.body.length);
-                return;
-        }
-        return;
-
+        var result = parseRecur(esprimaRaw, rootScope);
 
     }
 
-    var esprima = require('../lib/esprima');
+    var parseRecur = function(node, parentScope){
 
+        var addChild = function(node){
+            var n = new scope(node, parentScope);
+            console.log('adding child of type: '+n.getContent().data.type);
+            parentScope.addChildScope(n);
+            parseRecur(node, n);
+        }
 
+        parentScope.addChildScope(new scope(node, parentScope));
 
-    // load concrete parser
-    var parser = {
+        switch(node.type){
+            case 'Program':
 
-        parse : function(code){
-            // esprima parse code
-            var result = esprima.parse(code, {
-                loc: true,
-                range : false,
-                raw : false,
-                tokens : false,
-                comment : false,
-                tolerant : false
-            });
-            console.log(result);
+                if(node.body.length > 0){
+                    for(var i = 0; i < node.body.length; i++){
+                        addChild(node.body[i]);
+                    }
+                }
+                break;
+            case 'ExpressionStatement':
+                switch(node.expression.type){
+                    case 'CallExpression':
+                        if(node.expression.arguments.length > 0){
+                            for(var i = 0; i < node.expression.arguments.length; i++){
+                                addChild(node.expression.arguments[i]);
+                            }
+                        }
+                        break;
+                }
+                break;
+            case 'BlockStatement':
+                if(node.body.length > 0){
+                    for(var i = 0; i < node.body.length; i++){
+                        addChild(node.body[i]);
+                    }
+                }
+                break;
+            case 'VariableDeclaration':
 
-            // rootScope = new scope();
+                break;
+            case 'ObjectExpression':
 
+                break;
+            case 'FunctionExpression':
+                addChild(node.body);
+                break;
+            default:
+                break;
+        }
+    }
 
-
-            // return rootScope;
-        },
-
-    };
-
-    exports.parser = parser;
+    exports.rootScope = rootScope;
+    exports.parse = parse;
 });

@@ -1,0 +1,10 @@
+{
+    "name": "visumlize",
+    "title": "visUMLize",
+    "description": "LOREM IPSUM",
+    "homepage": "http://github.com/salt42/visumlize",
+    "version": "0.0.1",
+    "engines": {
+        "brackets": ">=0.41.0"
+    }
+}

@@ -2,27 +2,24 @@ define(function (require, exports, module) {
 
     "use strict";
 
-    console.clear()
-    var codeManager     = require('./src/codeManager').codeManager,
+    var codeManager     =            require('./src/codeManager'),
         AppInit         = brackets.getModule('utils/AppInit'),
         Menus           = brackets.getModule('command/Menus'),
         DocumentManager = brackets.getModule('document/DocumentManager'),
-        CommandManager  = brackets.getModule('command/CommandManager'),
-        ProjectManager  = brackets.getModule('project/ProjectManager');
+        CommandManager  = brackets.getModule('command/CommandManager');
 
-
-    function makeButton(){
+    var makeButton = function(){
         var menu              = Menus.addMenu("visumlize", "VISUMLIZE_MENU", Menus.BEFORE, Menus.AppMenuBar.HELP_MENU),
-            COMMAND_CURRDOC   = "visumlize.currDoc";
-        CommandManager.register("CurrDoc", COMMAND_CURRDOC, codeManager.parseDocument);
-        menu.addMenuItem(COMMAND_CURRDOC);
+            CURRDOC_CMD_ID   = "visumlize.currDoc";
+        CommandManager.register("CurrDoc", CURRDOC_CMD_ID, codeManager.parseDocument);
+        menu.addMenuItem(CURRDOC_CMD_ID, "Ctrl-Shift-V"); // SHORTCUT FÜR FUNKTIONSAUFRUF
     }
 
 
     AppInit.appReady(function(){
-        console.clear();
+        console.log('####################\nAppInit.appReady fired\n####################');
         makeButton();
-        codeManager.init(ProjectManager);
+        codeManager.init();
     });
 
 });
