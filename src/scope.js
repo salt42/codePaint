@@ -1,5 +1,6 @@
 define(function (require, exports, module) {
-
+// nett aber denk mal an die prototypes
+// machs nochmal dann lehrnst dus :) ich bin so gerne gemein *freu* xD
     var scope = function(data, parent){
 
         var childs = [],
