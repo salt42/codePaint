@@ -2,6 +2,8 @@ define(function (require, exports, module) {
 
     var esprima = require('../lib/esprima'),
           scope = require('src/scope');
+
+    //rong place
     var rootScope = new scope();
 
     var parse = function(code){
@@ -9,20 +11,27 @@ define(function (require, exports, module) {
         var esprimaRaw = esprima.parse(code, { loc: true });
 
         var result = parseRecur(esprimaRaw, rootScope);
+        console.log(result)
 
     }
 
-    var parseRecur = function(node, parentScope){
-
+    var parseRecurOld = function(node, parentScope){
+        // addChild is needlessly complicated
         var addChild = function(node){
             var n = new scope(node, parentScope);
             console.log('adding child of type: '+n.getContent().data.type);
             parentScope.addChildScope(n);
             parseRecur(node, n);
         }
-
+        //WTF!?!? pointless redundant
         parentScope.addChildScope(new scope(node, parentScope));
-
+        /*
+         *  hier brauch ich deutsch :)
+         *  ich hab mir die roh daten noch nich so genau angeschaut
+         *  aber nicht jeder type bekommt auch nen eigenen scope
+         *
+         *  and more comments!! espacially in recusions
+         */
         switch(node.type){
             case 'Program':
 
