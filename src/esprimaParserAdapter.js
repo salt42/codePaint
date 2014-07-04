@@ -1,78 +1,64 @@
 define(function (require, exports, module) {
 
     var esprima = require('../lib/esprima'),
-          scope = require('src/scope');
+          Scope = require('src/scope');
 
-    //rong place
-    var rootScope = new scope();
-
+    var init = function(){
+        prepareScope();
+    };
     var parse = function(code){
         // esprima parse code
         var esprimaRaw = esprima.parse(code, { loc: true });
+        return esprimaRaw;
+    };
 
-        var result = parseRecur(esprimaRaw, rootScope);
-        console.log(result)
+    function prepareScope(){
+        Scope.prototype.updateChilds = function(node, replace){
+            if(replace)this.removeChildScopes();
+            console.log(node);
+            switch(node.type){
+                case 'Program':
+                    if(node.body.length > 0){
+                        for(var i = 0; i < node.body.length; i++){
+                            s = new Scope(node.body[i].type);
+                            s.updateChilds(node.body[i]);
 
-    }
-
-    var parseRecurOld = function(node, parentScope){
-        // addChild is needlessly complicated
-        var addChild = function(node){
-            var n = new scope(node, parentScope);
-            console.log('adding child of type: '+n.getContent().data.type);
-            parentScope.addChildScope(n);
-            parseRecur(node, n);
-        }
-        //WTF!?!? pointless redundant
-        parentScope.addChildScope(new scope(node, parentScope));
-        /*
-         *  hier brauch ich deutsch :)
-         *  ich hab mir die roh daten noch nich so genau angeschaut
-         *  aber nicht jeder type bekommt auch nen eigenen scope
-         *
-         *  and more comments!! espacially in recusions
-         */
-        switch(node.type){
-            case 'Program':
-
-                if(node.body.length > 0){
-                    for(var i = 0; i < node.body.length; i++){
-                        addChild(node.body[i]);
-                    }
-                }
-                break;
-            case 'ExpressionStatement':
-                switch(node.expression.type){
-                    case 'CallExpression':
-                        if(node.expression.arguments.length > 0){
-                            for(var i = 0; i < node.expression.arguments.length; i++){
-                                addChild(node.expression.arguments[i]);
-                            }
+                            this.addChildScope(s);
                         }
-                        break;
-                }
-                break;
-            case 'BlockStatement':
-                if(node.body.length > 0){
-                    for(var i = 0; i < node.body.length; i++){
-                        addChild(node.body[i]);
                     }
-                }
-                break;
-            case 'VariableDeclaration':
+                    break;
+                case 'FunctionDeclaration':
+                    s = new Scope(node.body.type);
+                    //s.updateChilds(node.body);
+                    this.addChildScope(s);
+                case 'BlockStatement':
+                    if(node.body.length > 0){
+                        for(var i = 0; i < node.body.length; i++){
+                            s = new Scope();
+                            s.updateChilds(node.body[i]);
+                            this.addChildScope(s);
+                        }
+                    }
+                    break;
+                case 'VariableDeclaration':
 
-                break;
-            case 'ObjectExpression':
+                    break;
+                case 'ObjectExpression':
 
-                break;
-            case 'FunctionExpression':
-                addChild(node.body);
-                break;
-            default:
-                break;
+                    break;
+                case 'FunctionExpression':
+                    //addChild(node.body);
+                    break;
+                default:
+                    break;
+            }
+            this.addChildScope(s);
+            //parse data "recursive" through scope tree
+            //first create a new scope
+
         }
-    }
 
-    exports.rootScope = rootScope;
+    }
+    exports.init = init;
     exports.parse = parse;
 });
