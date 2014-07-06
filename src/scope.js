@@ -1,9 +1,10 @@
 define(function (require, exports, module) {
 
-    var Scope = function(type){
+    var Scope = function(type, loc){
         this.type = type;
         this.childs = [];
-        this.loc = {};
+        this.loc = loc === undefined ? {start: {line: 0, column: 0}, end: {line: 0, column: 0}} : loc;
+        console.log('new scope of type: '+this.type+', from  line: '+this.loc.start.line+' to line: '+this.loc.end.line);
     }
 //    Scope.prototype.childs = [];
 //    Scope.prototype.type = 'undefined';

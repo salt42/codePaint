@@ -34,7 +34,7 @@ define(function (require, exports, module) {
         var currDocContent = FileSystem.getFileForPath(currDoc._path)._contents;
 
         var syntaxTree = Parser.parse(currDocContent);
-        var root = new Scope();
+        var root = new Scope('root');
         root.updateChilds(syntaxTree);
         console.log(root);
 

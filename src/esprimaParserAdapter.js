@@ -16,32 +16,32 @@ define(function (require, exports, module) {
         Scope.prototype.updateChilds = function(node, replace){
             if(replace)this.removeChildScopes();
             console.log(node);
+            if(node === undefined) return;
             switch(node.type){
                 case 'Program':
-                    if(node.body.length > 0){
-                        for(var i = 0; i < node.body.length; i++){
-                            s = new Scope(node.body[i].type);
-                            s.updateChilds(node.body[i]);
-
-                            this.addChildScope(s);
-                        }
+                    var s = new Scope(node.type, node.loc);
+                    for(var i = 0; i < node.body.length; i++){
+                        s.updateChilds(node.body[i]);
                     }
+                    this.addChildScope(s);
                     break;
                 case 'FunctionDeclaration':
-                    s = new Scope(node.body.type);
-                    //s.updateChilds(node.body);
+                    var s = new Scope(node.type, node.loc);
+                    s.updateChilds(node.body);
                     this.addChildScope(s);
+                    break;
                 case 'BlockStatement':
-                    if(node.body.length > 0){
-                        for(var i = 0; i < node.body.length; i++){
-                            s = new Scope();
-                            s.updateChilds(node.body[i]);
-                            this.addChildScope(s);
-                        }
+                    for(var i = 0; i < node.body.length; i++){
+                        this.updateChilds(node.body[i]);
                     }
                     break;
+                case 'ExpressionStatement':
+                    var s = new Scope(node.type, node.loc);
+                    this.addChildScope(s);
+                    break;
                 case 'VariableDeclaration':
-
+                    var s = new Scope(node.type, node.loc);
+                    this.addChildScope(s);
                     break;
                 case 'ObjectExpression':
 
@@ -49,10 +49,12 @@ define(function (require, exports, module) {
                 case 'FunctionExpression':
                     //addChild(node.body);
                     break;
+                case 'CallExpression':
+                    //addChild(node.body);
+                    break;
                 default:
                     break;
             }
-            this.addChildScope(s);
             //parse data "recursive" through scope tree
             //first create a new scope
 
