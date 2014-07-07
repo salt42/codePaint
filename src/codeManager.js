@@ -8,7 +8,8 @@ define(function (require, exports, module) {
         ProjectManager  = brackets.getModule('project/ProjectManager'),
         ProjectConfig   =            require('src/projectConfig'),
         Parser          =            require('src/esprimaParserAdapter'),
-        Scope           =            require('src/scope');
+        Scope           =            require('src/scope'),
+        Renderer        =            require('src/renderer');
 
     var updateQueue     = [];
 
@@ -16,28 +17,23 @@ define(function (require, exports, module) {
         projectPath = ProjectManager.getProjectRoot()._path;
         ProjectConfig.loadProjectConf(projectPath);
         Parser.init();
+        Renderer.init();
     }
 
     var parseDocument = function() {
-        var currDoc = DocumentManager.getCurrentDocument().file;
-        // check if file is part of project
-        if(currDoc._path.indexOf(projectPath) < 0){
-            throw new Error('###### ERROR: FILE '+currDoc._path+' NOT IN PROJECT!');
+        var currDoc = DocumentManager.getCurrentDocument();
+        if(currDoc.file._path.indexOf(projectPath) < 0){ // check if file is part of project
+            throw new Error('###### ERROR: FILE '+currDoc.file._path+' NOT IN PROJECT!');
             return;
-        // check if document is in WorkingSet
-        }else if(DocumentManager.findInWorkingSet(currDoc._path) < 0 ){
-            console.log('FILE NOT IN WORKING SET!');
-            console.log('adding '+currDoc._path+' to workingSet');
-            // if not opened: add to WorkingSet
-            DocumentManager.addToWorkingSet(currDoc);
+        }else if(DocumentManager.findInWorkingSet(currDoc.file._path) < 0 ){ // check if document is in WorkingSet; if not: add to WorkingSet
+            console.log('FILE NOT IN WORKING SET!\nadding '+currDoc.file._path+' to workingSet');
+            DocumentManager.addToWorkingSet(currDoc.file);
         }
-        var currDocContent = FileSystem.getFileForPath(currDoc._path)._contents;
-
-        var syntaxTree = Parser.parse(currDocContent);
+        var syntaxTree = Parser.parse(currDoc.getText());
         var root = new Scope('root');
         root.updateChilds(syntaxTree);
+        Renderer.render(root);
         console.log(root);
-
 
     }
 

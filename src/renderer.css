@@ -1,0 +1,10 @@
+#visumlize-renderPanel .visumlize-scope{
+    border: 1px solid #2c2c2c;
+    padding-left: 10px;
+    width: auto;
+}
+#visumlize-renderPanel .visumlize-content{
+    font-size: .9em;
+    padding-left: 20px;
+    color: #e39350;
+}

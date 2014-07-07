@@ -19,11 +19,9 @@ define(function (require, exports, module) {
             if(node === undefined) return;
             switch(node.type){
                 case 'Program':
-                    var s = new Scope(node.type, node.loc);
                     for(var i = 0; i < node.body.length; i++){
-                        s.updateChilds(node.body[i]);
+                        this.updateChilds(node.body[i]);
                     }
-                    this.addChildScope(s);
                     break;
                 case 'FunctionDeclaration':
                     var s = new Scope(node.type, node.loc);
@@ -36,7 +34,8 @@ define(function (require, exports, module) {
                     }
                     break;
                 case 'ExpressionStatement':
-                    var s = new Scope(node.type, node.loc);
+                    var s = new Scope(node.expression.type, node.expression.loc);
+                    s.updateChilds(node.expression);
                     this.addChildScope(s);
                     break;
                 case 'VariableDeclaration':
@@ -46,11 +45,19 @@ define(function (require, exports, module) {
                 case 'ObjectExpression':
 
                     break;
-                case 'FunctionExpression':
-                    //addChild(node.body);
+                case 'FunctionExpression': // params
+                    var s = new Scope(node.type, node.loc);
+                    s.updateChilds(node.body);
+                    this.addChildScope(s);
                     break;
-                case 'CallExpression':
-                    //addChild(node.body);
+                case 'CallExpression': // callee
+                    for(var i = 0; i < node.arguments.length; i++){
+                        this.updateChilds(node.arguments[i]);
+                    }
+                    break;
+                case 'AssignmentExpression':
+                    this.updateChilds(node.left);
+                    this.updateChilds(node.right);
                     break;
                 default:
                     break;
