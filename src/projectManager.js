@@ -4,13 +4,10 @@ define(function (require, exports, module) {
         this.open = null;
     }
 
-    R.prototype.init = function(){
+    projectManager.prototype.init = function(){
         //open project
 
     };
-    R.prototype.draw = function(){
-        //draw scope
-    };
 
-    module.exports = R;
+    module.exports = projectManager;
 });
