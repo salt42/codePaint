@@ -1,16 +1,16 @@
 define(function (require, exports, module) {
     "use strict";
-    function R(){
+    function renderer(){
 
     }
 
-    R.prototype.init = function(){
+    renderer.prototype.init = function(){
         //set dom container
 
     };
-    R.prototype.draw = function(){
+    renderer.prototype.draw = function(){
         //draw scope
     };
 
-    module.exports = R;
+    module.exports = renderer;
 });
