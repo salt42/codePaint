@@ -1,6 +1,6 @@
 #visumlize-renderPanel .visumlize-scope{
     border: 1px solid #2c2c2c;
-    padding-left: 10px;
+    margin-left: 10px;
     width: auto;
 }
 #visumlize-renderPanel .visumlize-content{

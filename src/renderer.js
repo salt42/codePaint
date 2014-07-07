@@ -9,7 +9,6 @@ define(function (require, exports, module){
         ExtensionUtils.loadStyleSheet(module, 'renderer.css');
         var renderPanel = PanelManager.createBottomPanel("visumlize.renderPanel", $panelDom);
         renderPanel.show();
-
     }
 
     var render = function(scope){
