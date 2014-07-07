@@ -17,19 +17,18 @@ define(function (require, exports, module){
     }
 
     var makeDomEls = function(scope, $parentEl){
-        var $childEl = $('<div class="visumlize-scope visumlize-'+scope.type+'">"'+scope.type+'", lines '+scope.loc.start.line+' to '+scope.loc.end.line+'</div>');
+        var $childEl = $('<div class="visumlize-scope visumlize-'+scope.type+'">"'+scope.type+'", lines '+scope.loc.start.line+' to '+scope.loc.end.line+'</div>'),
+            l = {
+                    start: {line: scope.loc.start.line-1,
+                              ch: scope.loc.start.column},
+                      end: {line: scope.loc.end.line-1,
+                              ch: scope.loc.end.column}
+            };
+        if(l.end.line>0 || l.end.ch>0)
+            $childEl.append('<div class="visumlize-content">'+getCodeFromDocument(l)+'</div>');
+
         $parentEl.append($childEl);
         for(var i = 0; i < scope.childs.length; i++){
-            var l = {
-                    start: {
-                            line: scope.childs[i].loc.start.line,
-                            ch: scope.childs[i].loc.start.column},
-                    end: {
-                            line: scope.childs[i].loc.end.line,
-                            ch: scope.childs[i].loc.end.column}
-            }
-            $childEl.append('<div class="visumlize-content">'+getCodeFromDocument(l)+'</div>');
-            console.log($childEl);
             makeDomEls(scope.childs[i], $childEl);
         }
     }
@@ -40,7 +39,7 @@ define(function (require, exports, module){
         }
         var currDoc = DocumentManager.getCurrentDocument();
         var range = currDoc.getRange(loc.start, loc.end);
-        var result = replaceQuotes(range).trim().slice(0, 128)+'...';
+        var result = replaceQuotes(range).trim().slice(0, 32)+'...';
         return result;
     }
 
