@@ -7,7 +7,6 @@ define(function (require, exports, module) {
         controller      = require('./src/controller');
 
 
-
     var makeButton = function(){
         var menu = Menus.addMenu("visumlize", "VISUMLIZE_MENU", Menus.BEFORE, Menus.AppMenuBar.HELP_MENU),
             CURRDOC_CMD_ID = "visumlize.currDoc";
@@ -22,3 +21,5 @@ define(function (require, exports, module) {
     });
 
 });
+
+

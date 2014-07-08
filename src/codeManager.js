@@ -6,7 +6,7 @@ define(function (require, exports, module) {
         DocumentManager = brackets.getModule('document/DocumentManager'),
         FileSystem      = brackets.getModule('filesystem/FileSystem'),
         ProjectManager  = brackets.getModule('project/ProjectManager'),
-        ProjectConfig   =            require('src/projectConfig'),
+        //ProjectConfig   =            require('src/projectConfig'),
         Parser          =            require('src/esprimaParserAdapter'),
         Scope           =            require('src/scope');
 
@@ -14,7 +14,7 @@ define(function (require, exports, module) {
 
     var init = function(){
         projectPath = ProjectManager.getProjectRoot()._path;
-        ProjectConfig.loadProjectConf(projectPath);
+        //ProjectConfig.loadProjectConf(projectPath);
         Parser.init();
     }
 
@@ -36,7 +36,7 @@ define(function (require, exports, module) {
         var syntaxTree = Parser.parse(currDocContent);
         var root = new Scope('root');
         root.updateChilds(syntaxTree);
-        console.log(root);
+        return root;
 
 
     }

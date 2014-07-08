@@ -1,13 +1,12 @@
-define(function (require, exports, module) {
+define(function (require, projectManager, module) {
     "use strict";
-    function projectManager(){
-        this.open = null;
-    }
 
-    projectManager.prototype.init = function(){
+
+    projectManager.init = function(){
         //open project
 
     };
+    projectManager.getCurrentDoc = function(){
 
-    module.exports = projectManager;
+    };
 });

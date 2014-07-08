@@ -6,3 +6,7 @@ function go(){
     var link = 'dreieck';
 //BlockStatement end
 }
+var func2 = function(){
+
+};
+

@@ -1,10 +1,10 @@
-define(function (require, exports, module) {
-    var persist = 22;
+define(function (require, viewManager, module) {
+    "use strict";
+    var panelView = require("./panelView");
 
-module.exports.get = function(){
-    console.log(persist)
-}
-module.exports.set = function(a){
-    presist = a;
-}
+
+    viewManager.init = function(){
+
+        panelView.init();
+    };
 });
