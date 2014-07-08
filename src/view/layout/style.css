@@ -1,6 +1,7 @@
 #visumlize-panelContent {
     background-color: #d38b8b;
 }
-#visumlize-panelContent div {
+#visumlize-panelContent .scope {
     width: 400px;
+    padding-left: 20px;
 }

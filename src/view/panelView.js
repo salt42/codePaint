@@ -31,8 +31,8 @@ define(function (require, panelView, module) {
             //visUMLize.getManager('codeManager').parse(bracketsDoc.getText());
             //bracketsDoc.getText()
             var scope = visUMLize.getManager('codeManager').parseDocument();
-            console.log(scope);
-            $('#visumlize-panelContent').html(panelRenderer.draw(scope));
+            panelRenderer.draw(scope, '#visumlize-panelContent');
+
            // .html()
             //render doc
             //panelRenderer.draw();

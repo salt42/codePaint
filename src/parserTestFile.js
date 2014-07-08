@@ -1,4 +1,5 @@
 //FunctionDeclaration
+function asdf(){}
 function go(){
 //BlockStatement
     //ExpressionStatement
