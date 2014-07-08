@@ -23,10 +23,13 @@ define(function (require, exports, module) {
         this.childs.push(childScope);
     };
 
-
-
-
-
+    Scope.prototype.getChildByName = function(name){
+        for(i=0;i<this.childs.length;i++){
+            if(this.childs[i].name == name){
+                return this.childs[i];
+            }
+        }
+    };
 
     Scope.prototype.getChildScopes = function(){
         return this.childs;

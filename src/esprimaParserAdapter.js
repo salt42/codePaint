@@ -13,8 +13,7 @@ define(function (require, exports, module) {
     };
 
     function prepareScope(){
-        Scope.prototype.updateChilds = function(node, replace){
-            if(replace)this.removeChildScopes();
+        Scope.prototype.updateChilds = function(node){
 
             if(node === undefined) return;
             switch(node.type){
@@ -26,8 +25,27 @@ define(function (require, exports, module) {
                     this.addChildScope(s);
                     break;
                 case 'FunctionDeclaration':
+                    var items = node.body.body;
+                    var subs = [];
+                    for(i=0;i<items.length;i++){
+                        if(items[i].type == 'ExpressionStatement' && items[i].expression.type == 'AssignmentExpression'){
+                            if(items[i].expression.left.object.type == 'ThisExpression'){
+                                if(items[i].expression.right.type = 'FunctionExpression'){
+                                    var sc = new Scope('Function', items[i].expression.right.loc, items[i].expression.left.property.name);
+                                    subs.push(sc);
+                                }
+                            }
+                        }
+                    }
                     var s = new Scope('Function', node.loc, node.id.name);
+                    if(subs.length > 0) s.type = 'Object';
+                    for(i=0;i<subs.length;i++){
+                        s.addChildScope(subs[i]);
+                    }
+
                     //s.updateChilds(node.body);
+                    //if "this" deklaration
+
                     this.addChildScope(s);
                     break;
                 case 'BlockStatement':
@@ -37,14 +55,16 @@ define(function (require, exports, module) {
                     break;
                 case 'ExpressionStatement':
                     //prototype check
-
                     if(node.expression.left.type == 'MemberExpression' && node.expression.left.object.type == 'MemberExpression'){
                         if(node.expression.left.object.property.name == 'prototype'){
                             //is prototype
                             //node.expression.left.object.object.name  //object name
                             if(node.expression.right.type == 'FunctionExpression'){
+                                var parent = this.getChildByName(node.expression.left.object.object.name);
+                                if(parent){ parent.type = 'Object';
+                                }else{ parent = this; }
                                 var s = new Scope('Function', node.loc, node.expression.left.property.name);
-                                this.addChildScope(s);
+                                parent.addChildScope(s);
                             }
 
                         }
