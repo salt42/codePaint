@@ -1,6 +1,6 @@
 #visumlize-panelContent {
     background-color: #d38b8b;
 }
-.bottom-panel {
-    background-color: #3aa356;
+#visumlize-panelContent div {
+    width: 400px;
 }
