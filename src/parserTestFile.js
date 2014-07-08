@@ -1,5 +1,3 @@
-//FunctionDeclaration
-function asdf(){}
 function go(){
 //BlockStatement
     //ExpressionStatement
@@ -7,7 +5,9 @@ function go(){
     var link = 'dreieck';
 //BlockStatement end
 }
+
+go.prototype.init = function(){};
+
 var func2 = function(){
 
 };
-

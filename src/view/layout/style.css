@@ -1,7 +1,12 @@
 #visumlize-panelContent {
-    background-color: #d38b8b;
+
 }
 #visumlize-panelContent .scope {
     width: 400px;
-    padding-left: 20px;
+    overflow: hidden;
+    margin-left: 20px;
+    border: 1px solid #000;
+}
+#visumlize-panelContent .Program {
+    background-color: #959595;
 }

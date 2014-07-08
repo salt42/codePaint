@@ -15,7 +15,7 @@ define(function (require, exports, module) {
     function prepareScope(){
         Scope.prototype.updateChilds = function(node, replace){
             if(replace)this.removeChildScopes();
-            console.log(node);
+
             if(node === undefined) return;
             switch(node.type){
                 case 'Program':
@@ -26,22 +26,40 @@ define(function (require, exports, module) {
                     this.addChildScope(s);
                     break;
                 case 'FunctionDeclaration':
-                    var s = new Scope(node.type, node.loc);
-                    s.updateChilds(node.body);
+                    var s = new Scope('Function', node.loc, node.id.name);
+                    //s.updateChilds(node.body);
                     this.addChildScope(s);
                     break;
                 case 'BlockStatement':
                     for(var i = 0; i < node.body.length; i++){
-                        this.updateChilds(node.body[i]);
+                        //this.updateChilds(node.body[i]);
                     }
                     break;
                 case 'ExpressionStatement':
-                    var s = new Scope(node.type, node.loc);
-                    this.addChildScope(s);
+                    //prototype check
+
+                    if(node.expression.left.type == 'MemberExpression' && node.expression.left.object.type == 'MemberExpression'){
+                        if(node.expression.left.object.property.name == 'prototype'){
+                            //is prototype
+                            //node.expression.left.object.object.name  //object name
+                            if(node.expression.right.type == 'FunctionExpression'){
+                                var s = new Scope('Function', node.loc, node.expression.left.property.name);
+                                this.addChildScope(s);
+                            }
+
+                        }
+                    }
+
+                    //var s = new Scope(node.type, node.loc);
+                    //this.addChildScope(s);
                     break;
                 case 'VariableDeclaration':
-                    var s = new Scope(node.type, node.loc);
-                    this.addChildScope(s);
+                    //if(node.declarations.length > 1) //multi declaration
+                    if(node.declarations[0].init.type == 'FunctionExpression'){
+                        var s = new Scope('Function', node.loc, node.declarations[0].id.name);
+                        this.addChildScope(s);
+                    }
+
                     break;
                 case 'ObjectExpression':
 
