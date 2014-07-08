@@ -14,10 +14,9 @@ define(function (require, panelView, module) {
     panelView.init = function(){
         $panel = PanelManager.createBottomPanel('visumlize-bottomPanel', $("<div id='visumlize-bottomPanel' class='bottom-panel'>HTML for my panel<div id='visumlize-panelContent'>content</div></div>"),200);
 
-        $quickButton = $('<a id="visumlize-toolbar" title="visumlize" href="#">UML</a>');
+        $quickButton = $('<a id="visumlize-toolbar" title="visumlize" href="#">ASS</a>');
         $("#main-toolbar").find("#toolbar-go-live").after($quickButton);
         $($quickButton).click(togglePanel);
-
     };
 
     function togglePanel() {

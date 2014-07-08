@@ -1,0 +1,29 @@
+<html>
+<head>
+    <script>
+        window.onunload = function(){
+            window.saveData('save me');
+        };
+        window.getData = function(){
+            return {data:'nix sinnvolles'};
+        };
+        window.onload = function() {
+            window.parent.document.title  = 'visUMLize editor';
+            var width = 400;
+            var height = 300;
+            var leftPosition = (window.screen.width / 2) - ((width / 2) + 10);
+            var topPosition = (window.screen.height / 2) - ((height / 2) + 50);
+            window.resizeTo(width, height);
+            window.moveTo(leftPosition, topPosition);
+            var e = document.getElementById('test');
+            e.onclick = function(){
+                alert('läuft')
+            }
+        };
+
+    </script>
+</head>
+<body>
+    <div id="test" style="width:100px;height:100px;background-color:#0a4;"></div>
+</body>
+</html>
