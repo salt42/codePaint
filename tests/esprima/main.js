@@ -20,80 +20,143 @@ function onLoad(){
         dataType: 'text',
         success: function(e){
             testCode = e;
-            runParser();
+            var ast = esprima.parse(testCode, {
+                loc: true,
+                range : false,
+                raw : false,
+                tokens : false,
+                comment : false,
+                tolerant : false
+            })
+            traverse(ast);
         }
     });
 }
+var scopeChain = [];
+var assignments = [];
+var globScope = new Scope('global', null)
 
+function traverse(ast) {
 
-function scope(data, parent) {
-    if(parent){
-        console.log(data)
-        this.domEl = $('<div></div>')
-            .addClass(data.type)
-            .append( $('<div></div>')
-                .addClass('title')
-                .append(data.type + '      | pos: ' + data.loc.start.line + ' / ' + data.loc.start.column));
-        $(parent.domEl).append(this.domEl);
-    }
-    if(data) this.parseData(data);
+    estraverse.traverse(ast, {
+        enter: enter,
+        leave: leave
+    });
+    setTimeout(function(){
+        console.log(globScope)
+    },1000);
+
 }
 
-scope.prototype.data = null;
-scope.prototype.subScopes = [];
-scope.prototype.domEl = null;
 
-scope.prototype.addScope = function(data){
-    var sub = new scope(data, this);
-    this.subScopes.push(sub);
-    return sub;
-};
+/*
+* @param {object} node ast node
+* @param {object} node ast node
+*/
+function enter(node, parent){
+    if (createsNewScope(node)){
+        //check name default is anonymous
+        var name = 'anonymous';
+        if(parent && parent.type == 'VariableDeclarator'){
+            name = parent.id.name;
+        }else if(parent && parent.type == 'Property'){
+            name = parent.key.name;
+        }
+        var parentScope = scopeChain[scopeChain.length-1] || null;
+        var s = new Scope(node, parentScope);
+        if(node.type == 'Program')
+            globScope = s;
+        if(parentScope)
+            parentScope.declare(name, s);
+        scopeChain.push(s);
+  }
+    if (node.type === 'VariableDeclarator'){
+        var currentScope = scopeChain[scopeChain.length - 1];
+        //currentScope.push(node.id.name);
+        currentScope.declare(node.id.name, null)
+  }
+    if (node.type === 'AssignmentExpression'){
+        assignments.push(node.left.name);
+  }
+}
 
-scope.prototype.parseData = function(data){
-    this.data = data;
-    //parse data for this scorpe
-    switch(data.type){
-        case 'FunctionDeclaration':
-            var n = new scope(data.body, this);
-            this.subScopes.push(n);
-            break;
-        case 'VariableDeclaration':
-            //if(data.declarations[0].init.type == 'ObjectExpression'){
-                var n = new scope(data.declarations[0].init, this);
-                this.subScopes.push(n);
-            //}
-            break;
-        case 'ObjectExpression':
-            for(i=0;i<data.properties.length;i++){
-                var n = new scope(data.properties[i], this);
-                this.subScopes.push(n);
-            }
-            break;
-        case 'Property':
-            var n = new scope(data.value, this);
-            this.subScopes.push(n);
-            break;
-        case 'FunctionExpression':
-            var n = new scope(data.body, this);
-            this.subScopes.push(n);
-            break;
-        case 'BlockStatement2':
-            for(i=0;i<data.body.length;i++){
-                var n = new scope(data.body[i], this);
-                this.subScopes.push(n);
-            }
-            break;
-        case 'Program':
-            for(ii=0;ii<data.body.length;ii++){
-                var n = new scope(data.body[ii], this);
-                this.subScopes.push(n);
-            }
-            break;
-        default:
+function leave(node){
+  if (createsNewScope(node)){
+//    checkForLeaks(assignments, scopeChain);
+    scopeChain.pop();
+    assignments = [];
+  }
+}
+function isVarDefined(varname, scopeChain){
+  for (var i = 0; i < scopeChain.length; i++){
+    var scope = scopeChain[i];
+    if (scope.indexOf(varname) !== -1){
+      return true;
     }
-    //parse childs and
-    //set draw type :  class/propertie
+  }
+  return false;
+}
+/*function checkForLeaks(assignments, scopeChain){
+  for (var i = 0; i < assignments.length; i++){
+    if (!isVarDefined(assignments[i], scopeChain)){
+      console.log('Detected leaked global variable:', assignments[i]);
+    }
+  }
+}*/
+function createsNewScope(node){
+  return node.type === 'FunctionDeclaration' ||
+    node.type === 'FunctionExpression' ||
+    node.type === 'Program';
+}
+
+
+
+function Scope(node, parent) {
+    this.node = node;
+    this.parent = parent;
+    this.variables = []
+}
+Scope.prototype.declare = function(name, s){
+    this.variables[name] = s;
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function isFunction(form) {
+  return form.type === "FunctionExpression" ||
+    form.type === "FunctionDeclaration"
+}
+
+function isCatch(form) {
+  return form.type === "CatchClause"
+}
+
+function isScope(form) {
+  return form.type === "Program" ||
+    isFunction(form) ||
+    isCatch(form) ||
+    form.type === "WithStatement"
+}
+
+
+
 
 
 

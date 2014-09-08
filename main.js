@@ -1,6 +1,13 @@
 define(function (require, exports, module) {
     "use strict";
     var AppInit         = brackets.getModule('utils/AppInit'),
+        controller      = require('./src/extensionController');
+    AppInit.appReady(function(){
+        controller.init();
+    });
+/*
+    "use strict";
+    var AppInit         = brackets.getModule('utils/AppInit'),
         Menus           = brackets.getModule('command/Menus'),
         DocumentManager = brackets.getModule('document/DocumentManager'),
         CommandManager  = brackets.getModule('command/CommandManager'),
@@ -19,7 +26,6 @@ define(function (require, exports, module) {
         controller.init();
         makeButton();
     });
+*/
 
 });
-
-
