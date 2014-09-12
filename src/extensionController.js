@@ -30,6 +30,6 @@ define(function (require, exports, module) {
 
 
         testEditor = Editor.createInstance($panel.$panel);
-        console.log(testEditor);
+
     };
 });

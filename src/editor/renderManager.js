@@ -18,15 +18,21 @@ define(function (require, exports, module) {
             //prepare $container
         }
         /*
-         *  @param {renderer} diagram renderer obejct
+         *  @param {renderer} renderer obejct
          */
         renderManager.prototype.setRenderer = function(renderer) {
             _renderer = renderer;
         };
 
         renderManager.prototype.render = function(data) {
-            _renderer.render(data);
+            _renderer.render($container, data);
         };
+		/*
+         *  @param {string} color in css style
+         */
+		renderManager.prototype.setBackground = function(color) {
+			$container.css('background-color', color);
+		};
         return new renderManager();
     }
 

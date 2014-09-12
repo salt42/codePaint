@@ -2,6 +2,8 @@ define(function (require, exports, module) {
     "use strict";
     var AppInit         = brackets.getModule('utils/AppInit'),
         controller      = require('./src/extensionController');
+
+
     AppInit.appReady(function(){
         controller.init();
     });

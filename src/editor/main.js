@@ -5,7 +5,7 @@ EditorController
 define(function (require, exports, module) {
     "use strict";
     var Toolbar = require('./toolbar'),
-        ComandManager = require('./comandManager'),
+        CommandManager = require('./commandHandler'),
         RenderManager = require('./renderManager'),
         DefaultDiagram = require('./diagrams/default'),
         Diagrams = {};
@@ -16,7 +16,7 @@ define(function (require, exports, module) {
     /*
      *  @return {editorController} controller
      */
-    var createEditorControllerInstance = function($container) {
+    var createInstance = function($container) {
         //private controller
         var _toolbar,
             _commandManager,
@@ -34,17 +34,30 @@ define(function (require, exports, module) {
         //public editorController && editor instance API
         var editorController = function() {
             //create html bones
-            var $toolbar = $('<div class="toolbar"></div>');
-            var $canvas = $('<div class="canvas"></div>');
+            var $toolbar = $('<div class="toolbar" style="width:100%; height:20px;"></div>');
+            var $canvas = $('<div class="canvas" style="width:100%; height: calc(100% - 20px);"></div>');
             $container.append($toolbar);
             $container.append($canvas);
 
-            _toolbar = Toolbar.createInstance($toolbar, this);
-            _toolbar.setTools(Diagrams[_activeDiagramType].tools);
+			_toolbar = Toolbar.createInstance($toolbar, this);
+			_renderManager = RenderManager.createInstance($canvas, this);
+			_commandManager = CommandManager.createInstance(this);
 
-            _renderManager = RenderManager.createInstance($canvas, this);
-            _renderManager.setRenderer(Diagrams[_activeDiagramType].renderer);
+			var diagram = Diagrams[_activeDiagramType];
+			diagram.load({
+				registerRenerder : function(renderer) {
+					_renderManager.setRenderer(renderer);
+				},
+				registerCommands : function(commands) {
+					_commandManager.setCommands(commands)
+				},
+				registerTools : function(tools) {
+					_toolbar.setTools(tools);
+				}
+			});
 
+
+//			_renderManager.render();
         }
 		/*
 		 *	@param {document} array of ast's
@@ -74,6 +87,6 @@ define(function (require, exports, module) {
      *  @return {editorController} controller
      */
     exports.createInstance = function($container) {
-        return createEditorControllerInstance($container)
+        return createInstance($container)
     };
 });

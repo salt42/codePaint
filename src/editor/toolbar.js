@@ -10,7 +10,7 @@ define(function (require, exports, module) {
      *  @param {$object} $container
      *  @param {editorController} controller
      */
-    var createToolbarInstance = function($container, controller) {
+    var createInstance = function($container, controller) {
 
         //private
         var _tools = {};
@@ -33,7 +33,8 @@ define(function (require, exports, module) {
                         //create button html
                         var button = $('<div class="button">'+name+'</div>').click(function(){
                             //on click exute comand
-                            console.log('click');
+							controller.getCommandManager().createAndExecuteCommand(_tools[name].command);
+
                         });
 
                         $container.append(button);
@@ -47,6 +48,6 @@ define(function (require, exports, module) {
     }
 
     exports.createInstance = function($container, controller) {
-        return createToolbarInstance($container, controller);
+        return createInstance($container, controller);
     };
 });
