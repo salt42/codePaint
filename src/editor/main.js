@@ -8,8 +8,10 @@ define(function (require, exports, module) {
         CommandManager = require('./commandHandler'),
         RenderManager = require('./renderManager'),
         DefaultDiagram = require('./diagrams/default'),
+		QuickCreateDiagram = require('./diagrams/quickCreate/main'),
         Diagrams = {};
         Diagrams['default'] = DefaultDiagram;
+		Diagrams['quickCreate'] = QuickCreateDiagram
 
 
 
@@ -21,8 +23,7 @@ define(function (require, exports, module) {
         var _toolbar,
             _commandManager,
             _renderManager,
-            _doc,
-            _activeDiagramType = 'default';
+            _activeDiagramType = 'quickCreate';
 
 
 //        var switchDiagramType = function(type) {
@@ -33,9 +34,10 @@ define(function (require, exports, module) {
 
         //public editorController && editor instance API
         var editorController = function() {
+			this.document = null;
             //create html bones
             var $toolbar = $('<div class="toolbar" style="width:100%; height:20px;"></div>');
-            var $canvas = $('<div class="canvas" style="width:100%; height: calc(100% - 20px);"></div>');
+            var $canvas = $('<div id="visumlizeCanvas" style="width:100%; height: calc(100% - 20px);"></div>');
             $container.append($toolbar);
             $container.append($canvas);
 
@@ -57,20 +59,20 @@ define(function (require, exports, module) {
 			});
 
 
-//			_renderManager.render();
+
         }
 		/*
 		 *	@param {document} array of ast's
 		 */
         editorController.prototype.loadDocument = function(document) {
             //load document with ast('s) and additional editor data like scope tree, objects etc
-            _doc = document;
+            this.document = document;
         };
         editorController.prototype.unloadDocument = function() {
-            _doc = null;
+            document = null;
         };
         editorController.prototype.getDocument = function() {
-            return _doc;
+            return document;
         };
         editorController.prototype.getCommandManager = function() {
             return _commandManager;

@@ -4,11 +4,8 @@ extensionController | controlls the program flow between editor, projectManager 
 define(function (require, exports, module) {
     "use strict";
     var Editor = require('./editor/main'),
-        PanelManager = brackets.getModule("view/PanelManager");
-//        CodeManager = require('./editor/editorController'),
-//        ProjectManager = require('./editor/editorController');
-
-
+        PanelManager = brackets.getModule("view/PanelManager"),
+        CodeManager = require('./codeManager');
 
 
 
@@ -29,7 +26,13 @@ define(function (require, exports, module) {
         });
 
 
+		//test editor erstellen und css einbinden
         testEditor = Editor.createInstance($panel.$panel);
+		var doc = CodeManager.getCurrentDocument();
+		$('head').append('<link rel="stylesheet" type="text/css" href="C:/Users/bla/AppData/Roaming/Brackets/extensions/user/codePaint/src/editor/diagrams/quickCreate/css.css">');
+
+
+		testEditor.loadDocument(doc);
 
     };
 });

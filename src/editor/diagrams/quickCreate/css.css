@@ -1,0 +1,23 @@
+#visumlizeCanvas {
+	position: relative;
+}
+
+
+/* quickCreate diagram style */
+#visumlizeCanvas.quickCreate {
+
+}
+#visumlizeCanvas.quickCreate .entity {
+	position:absolute;
+	top: 0px;
+	left: 0px;
+	min-width: 50px;
+	min-height: 50px;
+	background-color: #006cbc;
+	border: 1px #000 solid;
+	resize: both;
+	overflow: auto;
+}
+#visumlizeCanvas.quickCreate .entity.scope {
+	background-color: #f00;
+}

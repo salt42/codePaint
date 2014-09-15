@@ -1,8 +1,14 @@
 define(function (require, exports, module) {
-    var clas = function(){};
-    clas.prototype.testMethode = function() {
 
-    };
+	var createInstance = function() {
+
+		var clas = function(){};
+		clas.prototype.testMethode = function() {
+
+		};
+
+		return new clas();
+	};
 });
 
 

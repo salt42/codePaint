@@ -16,12 +16,14 @@ define(function (require, exports, module) {
         //public
         var renderManager = function() {
             //prepare $container
+			$container.attr('id', 'visumlizeCanvas');
         }
         /*
          *  @param {renderer} renderer obejct
          */
         renderManager.prototype.setRenderer = function(renderer) {
             _renderer = renderer;
+			_renderer.init($container);
         };
 
         renderManager.prototype.render = function(data) {
