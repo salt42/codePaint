@@ -18,6 +18,21 @@ define(function (require, exports, module) {
         var Toolbar = function() {
 
         }
+        Toolbar.prototype.init = function() {
+			$container.append('<div class="moduleTools"></div>');
+			$container.append('<div class="defaultTools" style="float:right;"></div>');
+
+			var $select = $('<select name="diagramTypes" id="diagramTypes"></select>');
+			$select.append('<option value="default">default</option>');
+			$select.append('<option value="scopes">scopes</option>');
+			$select.append('<option value="quickCreate">quickCreate</option>');
+//  '<optgroup label="Scripts">'
+//  '</optgroup>'
+			$('.defaultTools', $container).append($select);
+			$select.change(function(e){
+				controller.changeDiagram(this.value);
+			});
+        };
         /*
          *  @param {Object} diagram tools obejct
          */
@@ -26,7 +41,8 @@ define(function (require, exports, module) {
             this.buildHtml();
         };
         Toolbar.prototype.buildHtml = function() {
-            $container.html('');
+            $('.moduleTools', $container).html('');
+			//diagramm defined tools
             for(name in _tools) {
                 switch(_tools[name].type){
                     case 'button':
@@ -37,14 +53,14 @@ define(function (require, exports, module) {
 
                         });
 
-                        $container.append(button);
+                        $('.moduleTools', $container).append(button);
                         break;
                 }
-
-
             }
         };
-        return new Toolbar();
+		var n = new Toolbar();
+		n.init();
+        return n;
     }
 
     exports.createInstance = function($container, controller) {

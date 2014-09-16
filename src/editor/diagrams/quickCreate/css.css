@@ -1,5 +1,6 @@
 #visumlizeCanvas {
 	position: relative;
+	overflow: scroll;
 }
 
 

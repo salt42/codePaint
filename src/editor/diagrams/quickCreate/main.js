@@ -164,18 +164,25 @@ define(function(require, exports, modul) {
 	};
 
 	function Renderer() {
-
+		this.project;
 	}
 	Renderer.prototype.init = function($container) {
 		var self = this;
+		this.$container = $container;
 		var entitys = {
 			childs : [],
 			addChild : function(child) {
 				this.childs.push(child);
 				$container.append(child.$ele)
 			},
-		};
+			render : function() {
+				for(k in this.childs) {
+					$container.append(this.childs[k].$ele);
 
+				}
+			},
+		};
+		this.entitys = entitys;
 		//click, key handler
 
 		$container.removeClass();
@@ -213,11 +220,12 @@ define(function(require, exports, modul) {
 			}
 		});
 	};
-	Renderer.prototype.render = function() {
-		//schwachscheiß
+	Renderer.prototype.render = function($context, project) {
+		this.entitys.render();
 	};
-	Renderer.prototype.onDocLoaded = function() {
-		//click, key handler
+	Renderer.prototype.onProjectLoaded = function(project) {
+		this.project = project;
+		this.render($container, project);
 	};
 
 
@@ -229,6 +237,9 @@ define(function(require, exports, modul) {
 
 	exports.load = function(api) {
 		var _renderer = new Renderer();
+		api.bind('projectLoaded', function(project){
+			_renderer.onProjectLoaded(project);
+		});
 //		api.registerEventListener('onDocLoaded', function(data) {
 //			_renderer.onDocLoaded(data);
 //		});

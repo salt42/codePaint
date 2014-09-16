@@ -26,8 +26,8 @@ define(function (require, exports, module) {
 			_renderer.init($container);
         };
 
-        renderManager.prototype.render = function(data) {
-            _renderer.render($container, data);
+        renderManager.prototype.render = function(project) {
+            _renderer.render($container, project);
         };
 		/*
          *  @param {string} color in css style

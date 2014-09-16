@@ -8,11 +8,12 @@ define(function (require, exports, module) {
         CommandManager = require('./commandHandler'),
         RenderManager = require('./renderManager'),
         DefaultDiagram = require('./diagrams/default'),
+		ScopeDiagram = require('./diagrams/scopes'),
 		QuickCreateDiagram = require('./diagrams/quickCreate/main'),
         Diagrams = {};
         Diagrams['default'] = DefaultDiagram;
-		Diagrams['quickCreate'] = QuickCreateDiagram
-
+		Diagrams['scopes'] = ScopeDiagram;
+		Diagrams['quickCreate'] = QuickCreateDiagram;
 
 
     /*
@@ -23,8 +24,8 @@ define(function (require, exports, module) {
         var _toolbar,
             _commandManager,
             _renderManager,
-            _activeDiagramType = 'quickCreate';
-
+            _activeDiagramType = 'quickCreate',
+			_activeApi = null;
 
 //        var switchDiagramType = function(type) {
 ////            Diagrams[type];
@@ -34,7 +35,7 @@ define(function (require, exports, module) {
 
         //public editorController && editor instance API
         var editorController = function() {
-			this.document = null;
+			this.project;
             //create html bones
             var $toolbar = $('<div class="toolbar" style="width:100%; height:20px;"></div>');
             var $canvas = $('<div id="visumlizeCanvas" style="width:100%; height: calc(100% - 20px);"></div>');
@@ -45,34 +46,73 @@ define(function (require, exports, module) {
 			_renderManager = RenderManager.createInstance($canvas, this);
 			_commandManager = CommandManager.createInstance(this);
 
-			var diagram = Diagrams[_activeDiagramType];
-			diagram.load({
-				registerRenerder : function(renderer) {
-					_renderManager.setRenderer(renderer);
-				},
-				registerCommands : function(commands) {
-					_commandManager.setCommands(commands)
-				},
-				registerTools : function(tools) {
-					_toolbar.setTools(tools);
-				}
-			});
-
-
-
+			this.changeDiagram(this.getDiagramTypes()[0]);
         }
+		editorController.prototype.getDiagramTypes = function() {
+			var types = [];
+			for(var k in Diagrams) {
+				types.push(k);
+			}
+			return types;
+		};
 		/*
-		 *	@param {document} array of ast's
+		 *	@param {string} type name
 		 */
-        editorController.prototype.loadDocument = function(document) {
-            //load document with ast('s) and additional editor data like scope tree, objects etc
-            this.document = document;
+		editorController.prototype.changeDiagram = function(type) {
+			var self = this;
+			if(type in Diagrams){
+				//save and clear
+				_toolbar.setTools({});
+				$('#visumlizeCanvas', $container).html('');
+				//diagram module api
+
+				var Api = function(){};
+				Api.prototype = Object.create({
+					listener : {},
+					trigger : function() {
+						var name = [].splice.call(arguments, 0, 1);
+						var args = [].splice.call(arguments, 0);
+						if(name in this.listener){
+							for(i=0;i<this.listener[name].length;i++) {
+								this.listener[name][i].apply(null, args);
+							}
+						}
+					},
+					bind : function(name, cb) {
+						if(!(name in this.listener)) this.listener[name] = [];
+						this.listener[name].push(cb);
+					},
+					getDocument : function() {
+						return self.project;
+					},
+					registerRenerder : function(renderer) {
+						_renderManager.setRenderer(renderer);
+					},
+					registerCommands : function(commands) {
+						_commandManager.setCommands(commands)
+					},
+					registerTools : function(tools) {
+						_toolbar.setTools(tools);
+					}
+				});
+				_activeApi = new Api();
+				Diagrams[type].load(_activeApi);
+				if(this.project) _renderManager.render(this.project);
+			}
+		};
+		/*
+		 *	@param {object} project object @todo
+		 */
+        editorController.prototype.loadDocument = function(project) {
+            //load project with ast('s) and additional editor data like scope tree, objects etc
+            this.project = project;
+			_activeApi.trigger('projectLoaded', this.project);
         };
         editorController.prototype.unloadDocument = function() {
-            document = null;
+            this.project = null;
         };
         editorController.prototype.getDocument = function() {
-            return document;
+            return this.project;
         };
         editorController.prototype.getCommandManager = function() {
             return _commandManager;

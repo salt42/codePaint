@@ -28,11 +28,25 @@ define(function (require, exports, module) {
 
 		//test editor erstellen und css einbinden
         testEditor = Editor.createInstance($panel.$panel);
-		var doc = CodeManager.getCurrentDocument();
+		var ast = CodeManager.getCurrentDocument();
 		$('head').append('<link rel="stylesheet" type="text/css" href="C:/Users/bla/AppData/Roaming/Brackets/extensions/user/codePaint/src/editor/diagrams/quickCreate/css.css">');
 
 
-		testEditor.loadDocument(doc);
+		var project = {
+			name : 'visumlize'	,
+			desc : 'visUMLize test project'	,
+			path : 'c:/bla/bla/visumlize',
+			documents : [
+				{
+					path : 'main.js',
+					ast : ast	//der editor/diagram braucht die äste und
+					//kann hier und unten persistente daten speichern
+				}
+			],
+			//hier speichert der editor/diagram persistente daten
+		}
+
+		testEditor.loadDocument(project);
 
     };
 });

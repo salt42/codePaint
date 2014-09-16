@@ -3,46 +3,31 @@ define(function (require, exports, module) {
 
 
 	exports.load = function(api) {
-
+		var _project = null;
 		api.registerRenerder({
-			render : function($container, data) {
+			init : function($container) {
+				var self = this;
+				api.bind('projectLoaded', function(project){
+					_project = project;
+					self.render($container, project);
+				});
+			},
+			render : function($container, project) {
+				console.log('render scopes')
 				$container.html('');
 				//es_traverse over data and select scopes
-				var colors = ['#f00','#0f0','#00f','#880','#088','#808'];
-				var cc = 0;
-				var parents = [$container];
-				estraverse.traverse(data, {
-					enter: function (node, parent) {
-						if (node.type == 'FunctionExpression' || node.type == 'FunctionDeclaration') {
 
-							var scope = new Scope(...)
-							scope.render($parentContainer);
-
-
-							parents[parents.length-1].addChild(scope);
-							parents.push($new);
-						}
-					},
-					leave: function (node, parent) {
-						if (node.type == 'FunctionExpression' || node.type == 'FunctionDeclaration') {
-							parents.pop();
-						}
-					}
-				});
-
-
-
-
-/*
-				var colors = ['#f00','#0f0','#00f','#880','#088','#808'];
+				var colors = ['#f00','#070','#00f','#880','#088','#808','#499','#994','#949'];
 				var cc = 0;
 				var $parents = [$container];
-				estraverse.traverse(data, {
+				console.log(project.documents[0]);
+				estraverse.traverse(project.documents[0].ast, {
 					enter: function (node, parent) {
 						if (node.type == 'FunctionExpression' || node.type == 'FunctionDeclaration') {
-
-							var $new = $('<div style="width:50px;hight:50px;background-color:'+ colors[cc] +';margin-left:'+ $parents.length*10 +'px;">Scope</div>');
-							console.log($new)
+							var type = 'Scope';
+							if(node.type == 'ObjectExpression')
+								type = 'ObjIteral';
+							var $new = $('<div style="width:50px;hight:50px;background-color:'+ colors[cc] +';margin-left:'+ $parents.length*10 +'px;">'+type+'</div>');
 							cc++;
 							if(cc == colors.length)
 								cc = 0;
@@ -55,7 +40,7 @@ define(function (require, exports, module) {
 							$parents.pop();
 						}
 					}
-				});*/
+				});
 			},
 		});
 		api.registerCommands([
