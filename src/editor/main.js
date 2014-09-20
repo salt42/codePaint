@@ -46,7 +46,7 @@ define(function (require, exports, module) {
 			_renderManager = RenderManager.createInstance($canvas, this);
 			_commandManager = CommandManager.createInstance(this);
 
-			this.changeDiagram(this.getDiagramTypes()[0]);
+			this.changeDiagram(this.getDiagramTypes()[2]);
         }
 		editorController.prototype.getDiagramTypes = function() {
 			var types = [];
