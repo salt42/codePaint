@@ -22,8 +22,8 @@ define(function (require, exports, module) {
 		] );
 		api.registerTools({
 			changeBgColor : {
+				id : 'changeBgColor',
 				type : 'button',
-				icon : 'bal.png',//not implemented
 				command : 'changeBgColor',
 			}
 		});

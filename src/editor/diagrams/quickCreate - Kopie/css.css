@@ -1,0 +1,61 @@
+#visumlizeCanvas {
+	position: relative;
+	overflow: scroll;
+}
+
+
+/* quickCreate diagram style */
+#visumlizeCanvas.quickCreate {
+	/*zoom: 200%;*/
+}
+#visumlizeCanvas.quickCreate .entity {
+	position:absolute;
+	top: 0px;
+	left: 0px;
+	background-color: #006cbc;
+	border: 1px #000 solid;
+	resize: both;
+	overflow: auto;
+	padding: 5px;
+}
+#visumlizeCanvas.quickCreate .entity.box {
+	display: block;
+	position:absolute;
+	min-width: 50px;
+	min-height: 50px;
+	resize: both;
+}
+#visumlizeCanvas.quickCreate .entity.line {
+	display: list-item;
+	position: static;
+	height: 20px!important;
+	width: 100%!important;
+	resize: none;
+	overflow: hidden;
+}
+#visumlizeCanvas.quickCreate .entity .headline{
+	width: 100%;
+	height: 20px;
+}
+/* dragging section */
+#visumlizeCanvas.quickCreate .entity.dragging {
+	position: absolute;
+	pointer-events: none;
+	opacity: 0.5;
+}
+#visumlizeCanvas.quickCreate .droparea {
+	border: #000 solid 1px;
+}
+#visumlizeCanvas.quickCreate .droparea.dragover-allowed {
+	border-color: #0f0;
+}
+#visumlizeCanvas.quickCreate .droparea.dragover-deny {
+	border-color: #f00;
+}
+/* dragging section end */
+
+
+/*costum entity section*/
+#visumlizeCanvas.quickCreate .entity.scope {
+	background-color: #f00;
+}

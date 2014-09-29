@@ -1,3 +1,9 @@
+#visumlize-bottomPanel .wrapper {
+	height: inherit;
+}
+.visumlize {
+	height:100%;
+}
 #visumlizeCanvas {
 	position: relative;
 	overflow: scroll;
@@ -6,19 +12,72 @@
 
 /* quickCreate diagram style */
 #visumlizeCanvas.quickCreate {
-
+	/*zoom: 200%;*/
 }
+
 #visumlizeCanvas.quickCreate .entity {
+	display: block;
 	position:absolute;
 	top: 0px;
 	left: 0px;
-	min-width: 50px;
-	min-height: 50px;
-	background-color: #006cbc;
+	background-color: #bc0041;
 	border: 1px #000 solid;
 	resize: both;
 	overflow: auto;
 }
+#visumlizeCanvas.quickCreate .entity.expanded {
+	min-width: 100px;
+	min-height: 100px;
+	resize: both;
+}
+#visumlizeCanvas.quickCreate .entity.contracted {
+	height: 20px!important;
+	/*width: 100%!important;*/
+	resize: none;
+	overflow: hidden;
+}
+#visumlizeCanvas.quickCreate .entity .headline {
+	width: 100%;
+	height: 20px;
+	background-color: #143ba5;
+}
+/* dragging section */
+#visumlizeCanvas.quickCreate .entity.dragging {
+	position: absolute;
+	pointer-events: none;
+	opacity: 0.5;
+}
+#visumlizeCanvas.quickCreate .droparea {
+	height: auto!important;
+	border: #000 solid 1px;
+	padding: 0px;
+	padding-bottom: 20px;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	resize: none;
+}
+#visumlizeCanvas.quickCreate ul.droparea>.entity {
+	display: list-item;
+	position: relative;
+	top: 0px!important;
+	left: 0px!important;
+	width: 100%;
+	height: 20px;
+}
+#visumlizeCanvas.quickCreate ul.droparea>.entity.expanded {
+	width: 100%!important;
+	height: auto!important;
+}
+#visumlizeCanvas.quickCreate .droparea.dragover-allow {
+	border-color: #0f0;
+}
+#visumlizeCanvas.quickCreate .droparea.dragover-deny {
+	border-color: #f00;
+}
+/* dragging section end */
+
+
+/*costum entity section*/
 #visumlizeCanvas.quickCreate .entity.scope {
 	background-color: #f00;
 }

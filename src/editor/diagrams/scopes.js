@@ -13,14 +13,12 @@ define(function (require, exports, module) {
 				});
 			},
 			render : function($container, project) {
-				console.log('render scopes')
 				$container.html('');
 				//es_traverse over data and select scopes
 
 				var colors = ['#f00','#070','#00f','#880','#088','#808','#499','#994','#949'];
 				var cc = 0;
 				var $parents = [$container];
-				console.log(project.documents[0]);
 				estraverse.traverse(project.documents[0].ast, {
 					enter: function (node, parent) {
 						if (node.type == 'FunctionExpression' || node.type == 'FunctionDeclaration') {

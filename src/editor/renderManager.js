@@ -10,35 +10,43 @@ define(function (require, exports, module) {
      *  @param {$object} $container
      *  @param {editorController} controller
      */
-    var createInstance = function($container, controller) {
+    var createInstance = function(controller) {
         //private
-        var _renderer;
+        var _renderer,
+			_$context;
         //public
-        var renderManager = function() {
-            //prepare $container
-			$container.attr('id', 'visumlizeCanvas');
-        }
+        var renderManager = function() {}
+
+        renderManager.prototype.init = function($context) {
+			_$context = $context;
+			_$context.attr('id', 'visumlizeCanvas');
+			if(_renderer) {
+				_renderer.init(_$context);
+			}
+        };
         /*
          *  @param {renderer} renderer obejct
          */
         renderManager.prototype.setRenderer = function(renderer) {
             _renderer = renderer;
-			_renderer.init($container);
+			if(_$context) {
+				_renderer.init(_$context);
+			}
         };
 
         renderManager.prototype.render = function(project) {
-            _renderer.render($container, project);
+            _renderer.render(_$context, project);
         };
 		/*
          *  @param {string} color in css style
          */
 		renderManager.prototype.setBackground = function(color) {
-			$container.css('background-color', color);
+			_$context.css('background-color', color);
 		};
         return new renderManager();
     }
 
-    exports.createInstance = function($container, controller) {
-        return createInstance($container, controller);
+    exports.createInstance = function(controller) {
+        return createInstance(controller);
     };
 });

@@ -10,17 +10,21 @@ define(function (require, exports, module) {
      *  @param {$object} $container
      *  @param {editorController} controller
      */
-    var createInstance = function($container, controller) {
+    var createInstance = function(controller) {
 
         //private
-        var _tools = {};
+        var _$context,
+			_tools = {},
+			_affixedTools = {};
+
         //public
         var Toolbar = function() {
 
         }
-        Toolbar.prototype.init = function() {
-			$container.append('<div class="moduleTools"></div>');
-			$container.append('<div class="defaultTools" style="float:right;"></div>');
+        Toolbar.prototype.init = function($context) {
+			_$context = $context;
+			_$context.append('<div class="moduleTools"></div>');
+			_$context.append('<div class="defaultTools" style="float:right;"></div>');
 
 			var $select = $('<select name="diagramTypes" id="diagramTypes"></select>');
 			$select.append('<option value="default">default</option>');
@@ -28,7 +32,7 @@ define(function (require, exports, module) {
 			$select.append('<option value="quickCreate">quickCreate</option>');
 //  '<optgroup label="Scripts">'
 //  '</optgroup>'
-			$('.defaultTools', $container).append($select);
+			$('.defaultTools', _$context).append($select);
 			$select.change(function(e){
 				controller.changeDiagram(this.value);
 			});
@@ -40,8 +44,12 @@ define(function (require, exports, module) {
             _tools = tools;
             this.buildHtml();
         };
+		Toolbar.prototype.registerTool = function(tool) {
+            _affixedTools[tool.id] = tool;
+            this.buildHtml();
+        };
         Toolbar.prototype.buildHtml = function() {
-            $('.moduleTools', $container).html('');
+            $('.moduleTools', _$context).empty();
 			//diagramm defined tools
             for(name in _tools) {
                 switch(_tools[name].type){
@@ -53,17 +61,31 @@ define(function (require, exports, module) {
 
                         });
 
-                        $('.moduleTools', $container).append(button);
+                        $('.moduleTools', _$context).append(button);
+                        break;
+                }
+            }
+
+			$('.defaultTools', _$context).empty();
+            for(name in _affixedTools) {
+                switch(_affixedTools[name].type){
+                    case 'button':
+                        //create button html
+                        var button = $('<div class="button">'+name+'</div>').click(function(){
+                            //on click exute comand
+							controller.getCommandManager().createAndExecuteCommand(_affixedTools[name].command);
+
+                        });
+
+                        $('.defaultTools', _$context).append(button);
                         break;
                 }
             }
         };
-		var n = new Toolbar();
-		n.init();
-        return n;
+        return new Toolbar();
     }
 
-    exports.createInstance = function($container, controller) {
-        return createInstance($container, controller);
+    exports.createInstance = function(controller) {
+        return createInstance(controller);
     };
 });

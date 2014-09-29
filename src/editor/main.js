@@ -19,14 +19,17 @@ define(function (require, exports, module) {
     /*
      *  @return {editorController} controller
      */
-    var createInstance = function($container) {
+    var createInstance = function(__con) {
         //private controller
         var _toolbar,
             _commandManager,
             _renderManager,
             _activeDiagramType = 'quickCreate',
-			_activeApi = null;
-
+			_activeApi,
+			_$context = __con,
+			_$wrapper,
+			_$toolbar,
+            _$canvas;
 //        var switchDiagramType = function(type) {
 ////            Diagrams[type];
 //            _toolbar.setTools(Diagrams[type].tools);
@@ -37,17 +40,25 @@ define(function (require, exports, module) {
         var editorController = function() {
 			this.project;
             //create html bones
-            var $toolbar = $('<div class="toolbar" style="width:100%; height:20px;"></div>');
-            var $canvas = $('<div id="visumlizeCanvas" style="width:100%; height: calc(100% - 20px);"></div>');
-            $container.append($toolbar);
-            $container.append($canvas);
+			_$wrapper = $('<div class="visumlize"></div>');
+            _$toolbar = $('<div class="toolbar" style="width:100%; height:20px;"></div>');
+            _$canvas = $('<div id="visumlizeCanvas" style="width:100%; height: calc(100% - 20px);"></div>');
 
-			_toolbar = Toolbar.createInstance($toolbar, this);
-			_renderManager = RenderManager.createInstance($canvas, this);
+
+			_$wrapper.append(_$toolbar);
+            _$wrapper.append(_$canvas);
+			_$context.append(_$wrapper);
+
+			_toolbar = Toolbar.createInstance(this);
+			_renderManager = RenderManager.createInstance(this);
 			_commandManager = CommandManager.createInstance(this);
-
+			this.init();
 			this.changeDiagram(this.getDiagramTypes()[2]);
-        }
+		}
+		editorController.prototype.init = function() {
+			_toolbar.init(_$toolbar);
+			_renderManager.init(_$canvas);
+		};
 		editorController.prototype.getDiagramTypes = function() {
 			var types = [];
 			for(var k in Diagrams) {
@@ -63,7 +74,7 @@ define(function (require, exports, module) {
 			if(type in Diagrams){
 				//save and clear
 				_toolbar.setTools({});
-				$('#visumlizeCanvas', $container).html('');
+				$('#visumlizeCanvas', _$context).html('');
 				//diagram module api
 
 				var Api = function(){};
@@ -119,7 +130,18 @@ define(function (require, exports, module) {
         };
         editorController.prototype.getRenderManager = function() {
             return _renderManager;
-        }
+        };
+		editorController.prototype.registerCommand = function(com) {
+			_commandManager.registerCommand(com);
+		};
+		editorController.prototype.registerTool = function(tool) {
+			_toolbar.registerTool(tool);
+		};
+		editorController.prototype.changeContext = function($context) {
+			_$wrapper.detach();
+			_$context = $context;
+			$(_$wrapper).appendTo($context)
+		};
         return new editorController();
     }
 
@@ -129,6 +151,6 @@ define(function (require, exports, module) {
      *  @return {editorController} controller
      */
     exports.createInstance = function($container) {
-        return createInstance($container)
+        return createInstance($container);
     };
 });

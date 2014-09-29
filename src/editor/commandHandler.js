@@ -13,18 +13,30 @@ define(function (require, exports, module) {
 
         //private
         var _commands = {};
+		var _affixedCommands = {};
         //public
         var commandHandler = function() {
 
         }
+		//don't smoke 2 muche ... find the useless for loop ;)
+        //commandHandler.prototype.execute = function(commandName, data) {
+        //    for(name in _commands){
+        //        _commands[name].execute.apply(controller, []);
+        //        return;
+        //    }
+        //};
+		//sec try
         /*
          *  @param {Object} diagram tools obejct
          */
         commandHandler.prototype.execute = function(commandName, data) {
-            for(name in _commands){
-                _commands[name].execute.apply(controller, []);
-                return;
-            }
+        	if(commandName in _commands) {
+				_commands[commandName].execute.apply(controller, []);
+			} else if(commandName in _affixedCommands) {
+				_affixedCommands[commandName].execute.apply(controller, []);
+			} else {
+				console.error('command "'+commandName+'" not found!');
+			}
         };
         commandHandler.prototype.createAndExecuteCommand = function(commandName, data) {
 			this.execute(commandName, data);
@@ -34,6 +46,12 @@ define(function (require, exports, module) {
 			for(i=0;i<commands.length;i++) {
 				_commands[ commands[i].type ] = commands[i];
 			}
+		};
+        /*
+         *  @param {Object} command
+         */
+		commandHandler.prototype.registerCommand = function(command) {
+			_affixedCommands[command.type] = command;
 		};
         return new commandHandler();
     }
